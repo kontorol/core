@@ -10,6 +10,7 @@ import (
 	"github.com/go-gost/core/limiter/rate"
 	"github.com/go-gost/core/logger"
 	"github.com/go-gost/core/metadata"
+	"github.com/go-gost/core/sniff/stun"
 )
 
 type Options struct {
@@ -20,6 +21,7 @@ type Options struct {
 	RateLimiter rate.RateLimiter
 	TLSConfig   *tls.Config
 	Logger      logger.Logger
+	Stun        *stun.Spoof
 }
 
 type Option func(opts *Options)
@@ -63,6 +65,13 @@ func TLSConfigOption(tlsConfig *tls.Config) Option {
 func LoggerOption(logger logger.Logger) Option {
 	return func(opts *Options) {
 		opts.Logger = logger
+	}
+}
+
+func StunOption(stun *stun.Spoof,logger logger.Logger) Option {
+	return func(opts *Options) {
+		st := stun.SetLogger(logger)
+		opts.Stun = &st
 	}
 }
 
