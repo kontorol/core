@@ -35,7 +35,7 @@ func (s Spoof) SetRawSrcByte(b []byte) Spoof {
 	return s
 }
 
-func (s Spoof) SetLogger(log logger.Logger) Spoof{
+func (s Spoof) SetLogger(log logger.Logger) Spoof {
 	s.logger = log
 	return s
 }
@@ -46,22 +46,27 @@ func InitStun(md metadata.Metadata, mark int) (*Spoof, error) {
 		return nil, err
 	}
 
-	if spf.md.isNFQ {
-		if err := ipTablesAppend(spf.md.mark, spf.md.NFQID); err != nil {
-			return nil, err
-		}
-		spf.queue = NewNFQ(spf.md.NFQID)
-	} else {
-		if spf,err = spf.NewRawUDPConn(); err != nil {
-			return nil, err
-		}
+	if spf != nil && spf.SpoofEnable {
 
+		if spf.md.isNFQ {
+			if err := ipTablesAppend(spf.md.mark, spf.md.NFQID); err != nil {
+				return nil, err
+			}
+			spf.queue = NewNFQ(spf.md.NFQID)
+		} else {
+			if spf, err = spf.NewRawUDPConn(); err != nil {
+				return nil, err
+			}
+
+		}
+		return spf, nil
+	} else {
+		return nil, nil
 	}
-	return spf, nil
 
 }
 
-func (s Spoof) IsNFQ() bool{
+func (s Spoof) IsNFQ() bool {
 	return s.md.isNFQ
 }
 
@@ -88,7 +93,7 @@ func (s Spoof) Spoof() (bool, error) {
 
 		}
 		if s.md.stunOnly {
-			return true,nil
+			return true, nil
 		}
 	}
 	return false, nil
@@ -176,20 +181,20 @@ func (v *packet) PacketLength() uint16 {
 	return v.length
 }
 
-func (s Spoof) SetAddr(raddr, pc2local string) (*Spoof,error) {
+func (s Spoof) SetAddr(raddr, pc2local string) (*Spoof, error) {
 	RAddr, err := net.ResolveUDPAddr("udp", raddr)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	sip, err := net.ResolveUDPAddr("udp", pc2local)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	s.raw.Frame.UDP.Src = sip.AddrPort().Port()
 
 	s.raw.Frame.IP.Dst = RAddr.IP.To4()
 	s.raw.Frame.UDP.Dst = RAddr.AddrPort().Port()
-	return &s,nil
+	return &s, nil
 }

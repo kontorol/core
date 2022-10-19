@@ -30,7 +30,7 @@ func parseMetadata(md metadata.Metadata,mark int) (*Spoof, error) {
 	if v := mdutil.GetString(md, mdKeyStun); v != "" {
 		vv = net.ParseIP(v).To4()
 	} else {
-		return nil, fmt.Errorf("STUN: STUN IP must be set")
+		return nil,nil
 	}
 
 	if v := mdutil.GetString(md, mdKeyInterface); v != "" {
