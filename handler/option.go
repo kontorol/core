@@ -68,10 +68,14 @@ func LoggerOption(logger logger.Logger) Option {
 	}
 }
 
-func StunOption(stun *stun.Spoof,logger logger.Logger) Option {
-	return func(opts *Options) {
-		st := stun.SetLogger(logger)
-		opts.Stun = &st
+func StunOption(stun *stun.Spoof, logger logger.Logger) Option {
+	if stun == nil {
+		return func(opts *Options) {}
+	} else {
+		return func(opts *Options) {
+			stun = stun.SetLogger(logger)
+			opts.Stun = stun
+		}
 	}
 }
 

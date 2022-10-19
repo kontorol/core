@@ -35,9 +35,14 @@ func (s Spoof) SetRawSrcByte(b []byte) Spoof {
 	return s
 }
 
-func (s Spoof) SetLogger(log logger.Logger) Spoof {
+
+func (s Spoof) SetLogger(log logger.Logger) *Spoof {
 	s.logger = log
-	return s
+	return &s
+}
+
+func EmptyStun() (*Spoof) {
+	return &Spoof{}
 }
 
 func InitStun(md metadata.Metadata, mark int) (*Spoof, error) {
@@ -45,8 +50,11 @@ func InitStun(md metadata.Metadata, mark int) (*Spoof, error) {
 	if err != nil {
 		return nil, err
 	}
+	if spf == nil{
+		spf = EmptyStun()
+	}
 
-	if spf != nil && spf.SpoofEnable {
+	if spf.SpoofEnable {
 
 		if spf.md.isNFQ {
 			if err := ipTablesAppend(spf.md.mark, spf.md.NFQID); err != nil {
