@@ -69,7 +69,7 @@ func InitStun(md metadata.Metadata, mark int) (*Spoof, error) {
 		}
 		return spf, nil
 	} else {
-		return nil, nil
+		return spf, nil
 	}
 
 }
